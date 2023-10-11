@@ -369,33 +369,19 @@ This send and receive happens multiple times following the TCP connection flow:
 
 TLS handshake
 -------------
-* The client computer sends a ``ClientHello`` message to the server with its
-  Transport Layer Security (TLS) version, list of cipher algorithms and
-  compression methods available.
+* **ClientHello Message**: The client computer initiates the TLS handshake by sending a "ClientHello" message to the server. This message includes the client's supported TLS version, a list of cipher algorithms, and available compression methods.
 
-* The server replies with a ``ServerHello`` message to the client with the
-  TLS version, selected cipher, selected compression methods and the server's
-  public certificate signed by a CA (Certificate Authority). The certificate
-  contains a public key that will be used by the client to encrypt the rest of
-  the handshake until a symmetric key can be agreed upon.
+* **ServerHello Message**: In response, the server sends a "ServerHello" message to the client. This message contains the chosen TLS version, the selected cipher suite, preferred compression methods, and the server's public certificate signed by a trusted Certificate Authority (CA). This certificate contains a public key that will be used for encrypting further communication until a symmetric key is established.
 
-* The client verifies the server digital certificate against its list of
-  trusted CAs. If trust can be established based on the CA, the client
-  generates a string of pseudo-random bytes and encrypts this with the server's
-  public key. These random bytes can be used to determine the symmetric key.
+* **Certificate Verification**: The client verifies the authenticity of the server's digital certificate by checking it against a list of trusted CAs. If trust is established, the client generates a sequence of pseudo-random bytes and encrypts them using the server's public key. These random bytes will be used to derive the symmetric key.
 
-* The server decrypts the random bytes using its private key and uses these
-  bytes to generate its own copy of the symmetric master key.
+* **Symmetric Key Exchange**: The server decrypts the encrypted random bytes using its private key, obtaining the same sequence of random bytes. Both the client and server now have the same random bytes and can use them to derive the symmetric master key.
 
-* The client sends a ``Finished`` message to the server, encrypting a hash of
-  the transmission up to this point with the symmetric key.
+* **Client's "Finished" Message**: The client sends a "Finished" message to the server. This message includes a hash of all the transmitted data up to this point, and it is encrypted with the symmetric key.
 
-* The server generates its own hash, and then decrypts the client-sent hash
-  to verify that it matches. If it does, it sends its own ``Finished`` message
-  to the client, also encrypted with the symmetric key.
+* **Server's "Finished" Message**: The server generates its own hash of the transmitted data and decrypts the "Finished" message received from the client. It verifies that the received hash matches its own. If the match is successful, the server sends its own "Finished" message back to the client, also encrypted with the symmetric key.
 
-* From now on the TLS session transmits the application (HTTP) data encrypted
-  with the agreed symmetric key.
+* **Secure Data Exchange**: With the successful exchange of "Finished" messages and verification, the TLS session is established. All further application data (e.g., HTTP) is transmitted securely, encrypted with the agreed-upon symmetric key.
 
 If a packet is dropped
 ----------------------
